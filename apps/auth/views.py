@@ -1,8 +1,9 @@
+from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask_login import login_user, logout_user
+
 from apps.app import db
 from apps.auth.forms import LoginForm, SignUpForm
 from apps.crud.models import User
-from flask import Blueprint, flash, redirect, render_template, request, url_for
-from flask_login import login_user, logout_user
 
 # Blueprintを使ってauthを生成する
 auth = Blueprint("auth", __name__, template_folder="templates", static_folder="static")
@@ -41,7 +42,7 @@ def signup():
         # GETパラメータにnextキーが存在し、値がない場合はユーザーの一覧ページへリダイレクトする
         next_ = request.args.get("next")
         if next_ is None or not next_.startswith("/"):
-            next_ = url_for("crud.users")
+            next_ = url_for("detector.index")
         return redirect(next_)
 
     return render_template("auth/signup.html", form=form)
@@ -58,7 +59,7 @@ def login():
         # ユーザーが存在しパスワードが一致する場合はログインを許可する
         if user is not None and user.verify_password(form.password.data):
             login_user(user)
-            return redirect(url_for("crud.users"))
+            return redirect(url_for("detector.index"))
 
         # ログイン失敗メッセージを設定する
         flash("メールアドレスかパスワードか不正です")
